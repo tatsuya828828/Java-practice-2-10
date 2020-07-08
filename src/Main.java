@@ -1,31 +1,38 @@
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
-		// プロパティファイルへ書き込むコード
-		Writer fw = new FileWriter("rpgdata.properties");
-		Properties wp = new Properties();
-		wp.setProperty("heroName", "アサカ");
-		wp.setProperty("heroHp", "100");
-		wp.setProperty("heroMp", "50");
-		wp.store(fw, "勇者のステータス");
-		fw.close();
+		InputStream is = new FileInputStream("rpgsave.xml");
+		// 文書全体を取得
+		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
+		// 一番外側のheroタグ(Element)を取得
+		Element hero = doc.getDocumentElement();
+		// その中のweaponタグ(Element)を取得
+		Element weapon = findChildByTag(hero, "weapon");
+		// その中のpowerタグ(Element)を取得
+		Element power = findChildByTag(weapon, "power");
+		// その中の文字列情報(text)を取得
+		String value = power.getTextContent();
+	}
 
-		// プロパティファイルを読み込むコード
-		Reader fr = new FileReader("rpgdata.properties");
-		Properties p = new Properties();
-		p.load(fr);
-		String name = p.getProperty("heroName");
-		String strHp = p.getProperty("heroHp");
-		int hp = Integer.parseInt(strHp);
-		String strMp = p.getProperty("heroMp");
-		int mp = Integer.parseInt(strMp);
-		System.out.println("勇者の名前:" + name);
-		System.out.println("HP:" + hp);
-		System.out.println("MP:" + mp);
+	static Element findChildByTag (Element self, String name) throws Exception {
+		NodeList children = self.getChildNodes();
+		for(int i = 0; i < children.getLength(); i++) {
+			if(children.item(i) instanceof Element) {
+				Element e = (Element) children.item(i);
+
+				if(e.getTagName().equals(name)) {
+					return e;
+				}
+			}
+		}
+		return null;
 	}
 }
