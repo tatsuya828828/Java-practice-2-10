@@ -1,6 +1,9 @@
 package job;
 
-public class Hero {
+import java.io.Serializable;
+
+public class Hero implements Serializable {
+	private static final long serialVersionUTD = 0000;
 	private int hp;
 	private int mp;
 	private String name;

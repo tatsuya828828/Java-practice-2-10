@@ -1,39 +1,24 @@
 import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import job.Hero;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
-		InputStream is = new FileInputStream("rpgsave.xml");
-		// 文書全体を取得
-		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(is);
-		// 一番外側のheroタグ(Element)を取得
-		Element hero = doc.getDocumentElement();
-		// その中のweaponタグ(Element)を取得
-		Element weapon = findChildByTag(hero, "weapon");
-		// その中のpowerタグ(Element)を取得
-		Element power = findChildByTag(weapon, "power");
-		// その中の文字列情報(text)を取得
-		String value = power.getTextContent();
-	}
+		// インスタンスの直列かと保存
+		Hero hero1 = new Hero("ミナト");
+		FileOutputStream fos = new FileOutputStream("rpgsave.dat");
+		ObjectOutputStream oos = new ObjectOutputStream(fos);
+		oos.writeObject(hero1);
+		oos.flush();
+		oos.close();
 
-	static Element findChildByTag (Element self, String name) throws Exception {
-		// 全ての子を取得
-		NodeList children = self.getChildNodes();
-		for(int i = 0; i < children.getLength(); i++) {
-			if(children.item(i) instanceof Element) {
-				Element e = (Element) children.item(i);
-				// タグ名を照合する
-				if(e.getTagName().equals(name)) {
-					return e;
-				}
-			}
-		}
-		return null;
+		// ファイルからインスタンスを復元
+		FileInputStream fis = new FileInputStream("rpgsave.dat");
+		ObjectInputStream ois = new ObjectInputStream(fis);
+		Hero hero2 = (Hero) ois.readObject();
+		ois.close();
 	}
 }
