@@ -23,11 +23,12 @@ public class Main {
 	}
 
 	static Element findChildByTag (Element self, String name) throws Exception {
+		// 全ての子を取得
 		NodeList children = self.getChildNodes();
 		for(int i = 0; i < children.getLength(); i++) {
 			if(children.item(i) instanceof Element) {
 				Element e = (Element) children.item(i);
-
+				// タグ名を照合する
 				if(e.getTagName().equals(name)) {
 					return e;
 				}
